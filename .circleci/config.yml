@@ -1,0 +1,61 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/golang:1.16
+    working_directory: /go/src/github.com/go-devops
+
+jobs:
+  build:
+    executor: docker-executor
+    steps:
+      - setup_remote_docker:
+          version: 20.10.7
+          docker_layer_caching: true
+
+      - checkout
+
+      - run: go mod tidy
+
+      - restore_cache:
+          name: Restore build cache
+          keys:
+            - go-mod-v1-{{ checksum "go.mod" }}
+            - go-mod-v1-
+
+      - run: go mod download
+
+      - save_cache:
+          name: Save build cache
+          paths:
+            - /go/pkg/mod
+          key: go-mod-v1-{{ checksum "go.mod" }}
+      - run: go test ./...
+      - run: go build -o server .
+      - run: 
+          name: Build and push docker image
+          command: |
+            TAG=${echo $CIRCLE_SHA1 | cut -c1-7}
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker build -t vksssd/go-devops$TAG .
+            docker push vksssd/go-devops$TAG
+            docker tag vksssd/go-devops$TAG vksssd/go-devops:latest
+            docker push vksssd/go-devops:latest
+  test:
+    executor: docker-executor
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore build cache
+          keys:
+            - go-mod-v1-{{ checksum "go.mod" }}
+            - go-mod-v1-
+      - run: go test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - test
