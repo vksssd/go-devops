@@ -41,7 +41,7 @@ jobs:
             docker build -t vksssd/go-devops:latest .
             # docker push vksssd/go-devops$TAG
             # docker tag vksssd/go-devops$TAG vksssd/go-devops:latest
-            docker tag  vksssd/go-devops:latest
+            # docker tag  vksssd/go-devops:latest
             docker push vksssd/go-devops:latest
   test:
     executor: docker-executor
