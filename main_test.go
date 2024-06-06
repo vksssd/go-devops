@@ -8,7 +8,7 @@ import (
 
 // TestIndex tests serving the index.html file
 func TestIndex(t *testing.T) {
-	req, err := http.NewRequest("GET", "/vnayak", nil)
+	req, err := http.NewRequest("GET", "/vinayak", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,6 +29,30 @@ func TestIndex(t *testing.T) {
 	// }
 	
 	expected := webPage
+
+	if rr.Body.String() != string(expected) {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), string(expected))
+	}
+}
+func TestIndex2(t *testing.T) {
+	req, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handlerName)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	
+	expected := "Hello, this is the Go server!"
 
 	if rr.Body.String() != string(expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
