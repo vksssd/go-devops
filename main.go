@@ -1,28 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"fmt"
 )
 
-
-
-
-var webPage = `<html>
-<head>
-<title>
-Hello from Go!
-</title>
-</head>
-<body style="background-color:powderblue;">
-<h1>Hello from Go!</h1>
-<p>This is a trial 1.1.</p>
-</body>
-</html>`
-
-
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, webPage)
+	fs := http.FileServer(http.Dir("./public"))
+	fs.ServeHTTP(w, r)
 }
 
 func main() {
