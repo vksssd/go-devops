@@ -46,8 +46,14 @@ func handlerName(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, webPage)
 }
 
+func handlerIndex(w http.ResponseWriter, r *http.Request) {
+	fs := http.FileServer(http.Dir("./public"))
+	fs.ServeHTTP(w, r)
+}
+
 func main() {
     http.HandleFunc("/", handler)
     http.HandleFunc("/vinayak", handlerName)
+	http.HandleFunc("/pages", handlerIndex)
     http.ListenAndServe(":8080", nil)
 }
