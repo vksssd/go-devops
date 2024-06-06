@@ -36,11 +36,12 @@ jobs:
       - run: 
           name: Build and push docker image
           command: |
-            TAG=${echo $CIRCLE_SHA1 | cut -c1-7}
+            # TAG=${echo $CIRCLE_SHA1 | cut -c1-7}
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker build -t vksssd/go-devops$TAG .
-            docker push vksssd/go-devops$TAG
-            docker tag vksssd/go-devops$TAG vksssd/go-devops:latest
+            docker build -t vksssd/go-devops:latest .
+            # docker push vksssd/go-devops$TAG
+            # docker tag vksssd/go-devops$TAG vksssd/go-devops:latest
+            docker tag  vksssd/go-devops:latest
             docker push vksssd/go-devops:latest
   test:
     executor: docker-executor
